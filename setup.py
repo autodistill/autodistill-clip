@@ -13,14 +13,17 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="template-python-zuppif#1",  
     version=version,
-    author="zuppif",
-    author_email="francesco.zuppichini@gmail.com",
-    description="<INSERT_DESCRIPTION>",
+    author="Roboflow",
+    author_email="support@roboflow.com",
+    description="CLIP module for use with Autodistill",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    url="https://github.com/autodistill/autodistill-clip",
     install_requires=[
-      # list your requires
+        "torch",
+        "supervision",
+        "numpy",
+        "git+https://github.com/openai/CLIP.git"
     ],
     packages=find_packages(exclude=("tests",)),
     extras_require={
