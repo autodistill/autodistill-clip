@@ -2,7 +2,7 @@ import setuptools
 from setuptools import find_packages
 import re
 
-with open("./src/__init__.py", 'r') as f:
+with open("./autodistill_clip/__init__.py", 'r') as f:
     content = f.read()
     # from https://www.py4u.net/discuss/139845
     version = re.search(r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]', content).group(1)
@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="template-python-zuppif#1",  
+    name="autodistill_clip",  
     version=version,
     author="Roboflow",
     author_email="support@roboflow.com",
@@ -22,8 +22,7 @@ setuptools.setup(
     install_requires=[
         "torch",
         "supervision",
-        "numpy",
-        "git+https://github.com/openai/CLIP.git"
+        "numpy"
     ],
     packages=find_packages(exclude=("tests",)),
     extras_require={
