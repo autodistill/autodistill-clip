@@ -40,14 +40,30 @@ class CLIP(ClassificationBaseModel):
         labels = self.ontology.prompts()
 
         image = self.clip_preprocess(Image.open(input)).unsqueeze(0).to(DEVICE)
-        text = self.tokenize(labels).to(DEVICE)
 
-        with torch.no_grad():
-            logits_per_image, _ = self.clip_model(image, text)
-            probs = logits_per_image.softmax(dim=-1).cpu().numpy()
+        if isinstance(labels, str):
+            text = self.tokenize(labels).to(DEVICE)
 
-            top_prob = np.max(probs)
-            top_class = np.argmax(probs)
+            with torch.no_grad():
+                logits_per_image, _ = self.clip_model(image, text)
+                probs = logits_per_image.softmax(dim=-1).cpu().numpy()
+
+                top_prob = np.max(probs)
+                top_class = np.argmax(probs)
+        else:
+            # each label is an embedding, do cosine sim
+            with torch.no_grad():
+                image_features = self.clip_model.encode_image(image)
+
+            similarities = []
+
+            for label in labels:
+                label_features = torch.tensor(np.array(label).reshape(1, -1)).to(DEVICE)
+                similarity = torch.cosine_similarity(image_features, label_features)
+                similarities.append(similarity.item())
+
+            top_prob = np.max(similarities)
+            top_class = np.argmax(similarities)
 
         return sv.Classifications(
             class_id=np.array([top_class]),
