@@ -36,12 +36,23 @@ class CLIP(ClassificationBaseModel):
         self.clip_preprocess = preprocess
         self.tokenize = clip.tokenize
 
+    def embed_image(self, input: str) -> np.ndarray:
+        image = self.clip_preprocess(Image.open(input)).unsqueeze(0).to(DEVICE)
+
+        with torch.no_grad():
+            image_features = self.clip_model.encode_image(image)
+
+        return image_features.cpu().numpy()
+    
+    def embed_text(self, input: str) -> np.ndarray:
+        return self.clip_model.encode_text(self.tokenize([input]).to(DEVICE)).cpu().numpy()
+
     def predict(self, input: str) -> sv.Classifications:
         labels = self.ontology.prompts()
 
         image = self.clip_preprocess(Image.open(input)).unsqueeze(0).to(DEVICE)
 
-        if isinstance(labels, str):
+        if isinstance(labels[0], str):
             text = self.tokenize(labels).to(DEVICE)
 
             with torch.no_grad():
