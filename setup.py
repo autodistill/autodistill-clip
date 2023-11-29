@@ -22,7 +22,8 @@ setuptools.setup(
     install_requires=[
         "torch",
         "supervision",
-        "numpy"
+        "numpy",
+        "rf_clip"
     ],
     packages=find_packages(exclude=("tests",)),
     extras_require={
