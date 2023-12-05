@@ -1,20 +1,16 @@
 import os
-from dataclasses import dataclass
-
 import sys
-from PIL import Image
+from dataclasses import dataclass
+from typing import Union
+
 import numpy as np
 import supervision as sv
 import torch
-from autodistill.core.embedding_ontology import (
-    EmbeddingOntology,
-    ONTOLOGY_WITH_EMBEDDINGS,
-    compare_embeddings,
-)
-from autodistill.core.embedding_model import EmbeddingModel
-from autodistill.detection import CaptionOntology
 from autodistill.classification import ClassificationBaseModel
-from typing import Union
+from autodistill.core.embedding_model import EmbeddingModel
+from autodistill.core.embedding_ontology import EmbeddingOntology, compare_embeddings
+from autodistill.detection import CaptionOntology
+from autodistill.helpers import load_image
 
 HOME = os.path.expanduser("~")
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -54,7 +50,8 @@ class CLIP(ClassificationBaseModel, EmbeddingModel):
         self.ontology_type = self.ontology.__class__.__name__
 
     def embed_image(self, input: str) -> np.ndarray:
-        image = self.clip_preprocess(Image.open(input)).unsqueeze(0).to(DEVICE)
+        image = load_image(input, return_format="PIL")
+        image = self.clip_preprocess(image).unsqueeze(0).to(DEVICE)
 
         with torch.no_grad():
             image_features = self.clip_model.encode_image(image)
@@ -67,7 +64,8 @@ class CLIP(ClassificationBaseModel, EmbeddingModel):
         )
 
     def predict(self, input: str) -> sv.Classifications:
-        image = self.clip_preprocess(Image.open(input)).unsqueeze(0).to(DEVICE)
+        image = load_image(input, return_format="PIL")
+        image = self.clip_preprocess(image).unsqueeze(0).to(DEVICE)
 
         if isinstance(self.ontology, EmbeddingOntology):
             with torch.no_grad():

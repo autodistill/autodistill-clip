@@ -32,8 +32,9 @@ pip3 install autodistill-clip
 
 ```python
 from autodistill_clip import CLIP
+from autodistill.detection import CaptionOntology
 
-# define an ontology to map class names to our GroundingDINO prompt
+# define an ontology to map class names to our CLIP prompt
 # the ontology dictionary has the format {caption: class}
 # where caption is the prompt sent to the base model, and class is the label that will
 # be saved for that caption in the generated annotations
@@ -46,9 +47,13 @@ base_model = CLIP(
         }
     )
 )
+
+results = base_model.predict("./context_images/test.jpg")
+
+print(results)
+
 base_model.label("./context_images", extension=".jpeg")
 ```
-
 
 ## License
 
